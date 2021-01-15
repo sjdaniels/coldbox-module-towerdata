@@ -19,7 +19,26 @@ component accessors="true" implements="cbvalidation.models.validators.IValidator
 	boolean function validate(required any validationResult, required any target, required string field, any targetValue, any validationData, struct rules){
 		// Only validate simple values and if they have length, else ignore.
 		if( isSimpleValue( arguments.targetValue ) AND len( trim( arguments.targetValue ) ) ){
-			local.towerResult = TowerData.validate(arguments.targetValue);
+			// don't bother to call the API if the email format is straight up bad
+			if (!isValid("email", arguments.targetValue)) {
+				var args = {
+					message        = "The value you entered, #arguments.targetValue#, is not a valid email address.",
+					field          = arguments.field,
+					validationType = getName(),
+					validationData = arguments.validationData,
+					rejectedValue  = arguments.targetValue,
+				};
+				validationResult.addError( validationResult.newError( argumentCollection=args ).setErrorMetadata({ "details":"Not a valid email address." }) );
+				return false;
+			}
+
+			try {
+				local.towerResult = TowerData.validate(arguments.targetValue);
+			} 
+			catch (TowerData.email local.e) {
+				// for API failures, just assume email is OK and carry on
+				return true;
+			}
 			if (local.towerResult.email_validation.status=="invalid") {
 				var args = {
 					message        = "The value you entered, #arguments.targetValue#, is not a valid email address: #TowerData.getStatusCodes()[local.towerResult.email_validation.status_code].description#",

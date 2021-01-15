@@ -3,7 +3,7 @@ component {
 	this.title 				= "TowerData Module";
 	this.author 			= "Sean Daniels";
 	this.description 		= "Module for interacting with TowerData APIs";
-	this.version			= "1.0.0+0001";
+	this.version			= "1.0.1+0001";
 	// If true, looks for views in the parent first, if not found, then in the module. Else vice-versa
 	this.viewParentLookup 	= true;
 	// If true, looks for layouts in the parent first, if not found, then in module. Else vice-versa
